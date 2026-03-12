@@ -24,8 +24,6 @@ async def send_audio(websocket, stream):
 
 async def receive_text(websocket):
     """Server က စာသားအသစ်ပို့တာနဲ့ ဘေးတိုက် တန်းစီပြီး ပြပေးမယ်"""
-    print("🎙️ စကားပြောနေ... (စာသားများ အောက်တွင် ပေါ်လာမည်)")
-    print("⏸️  အသံ ရပ်သွား 1 သက္ကန္ဒ ကျော်လျှင် ဖော်ရှင်းပြီးသည်")
     print("-" * 60)
     try:
         while True:
@@ -34,7 +32,7 @@ async def receive_text(websocket):
             
             if message.strip():
                 # စာသားများကို တောက်လျှောက် ပြပေးမယ်
-                sys.stdout.write(f"\n✅ ဖော်ရှင်းထားပြီး: {message}\n")
+                sys.stdout.write(f"\n✅ test: {message}\n")
                 sys.stdout.flush()
                 
     except Exception as e:
@@ -53,8 +51,8 @@ async def record_and_stream():
         frames_per_buffer=CHUNK
     )
 
-    print("✅ Connected! အရည်ကြီးစကား ပြောနိုင်ပါပြီ။")
-    print("🎙️  စကားပြောပါ... (Press Ctrl+C to stop)")
+    print("✅ Connected! Starting audio stream...")
+    print("🎙️  Speaking... (Press Ctrl+C to stop)")
     print("-" * 60)
 
     try:
