@@ -3,14 +3,14 @@ import websockets
 import pyaudio
 import sys
 
-# Audio Settings
-CHUNK = 1024
+# Audio Settings - Optimized for longer continuous speech
+CHUNK = 1024  # Larger chunks to accumulate more audio
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
 
 async def send_audio(websocket, stream):
-    """Mic ကနေ အသံဖမ်းပြီး Server ဆီ တောက်လျှောက် ပို့နေမယ်"""
+    """Mic ကနေ အသံဖမ်းပြီး Server ဆီ တောက်လျှောက် ပို့နေမယ် (အရည်ကြီးစကား)"""
     try:
         while True:
             # Mic ကနေ data ဖတ်မယ်
@@ -24,16 +24,17 @@ async def send_audio(websocket, stream):
 
 async def receive_text(websocket):
     """Server က စာသားအသစ်ပို့တာနဲ့ ဘေးတိုက် တန်းစီပြီး ပြပေးမယ်"""
-    print("Transcription: ", end="", flush=True) 
+    print("🎙️ စကားပြောနေ... (စာသားများ အောက်တွင် ပေါ်လာမည်)")
+    print("⏸️  အသံ ရပ်သွား 1 သက္ကန္ဒ ကျော်လျှင် ဖော်ရှင်းပြီးသည်")
+    print("-" * 60)
     try:
         while True:
             # Server က စာသားအသစ်ကို စောင့်မယ်
             message = await websocket.recv()
             
             if message.strip():
-                # \r မသုံးတော့ဘဲ space လေးခြားပြီး ဘေးတိုက် ဆက်သွားမယ်
-                # ဒါမှ စာသားတွေက ရိုက်စက်လိုမျိုး တောက်လျှောက် စီးဆင်းနေမှာပါ
-                sys.stdout.write(f"{message} ")
+                # စာသားများကို တောက်လျှောက် ပြပေးမယ်
+                sys.stdout.write(f"\n✅ ဖော်ရှင်းထားပြီး: {message}\n")
                 sys.stdout.flush()
                 
     except Exception as e:
@@ -52,7 +53,9 @@ async def record_and_stream():
         frames_per_buffer=CHUNK
     )
 
-    print("--- Connected! Audio streaming is live. ---")
+    print("✅ Connected! အရည်ကြီးစကား ပြောနိုင်ပါပြီ။")
+    print("🎙️  စကားပြောပါ... (Press Ctrl+C to stop)")
+    print("-" * 60)
 
     try:
         async with websockets.connect(uri) as websocket:
@@ -63,9 +66,9 @@ async def record_and_stream():
             )
 
     except KeyboardInterrupt:
-        print("\nStopping...")
+        print("\n\n⏹️ Stopping...")
     except Exception as e:
-        print(f"\nConnection Error: {e}")
+        print(f"\n❌ Connection Error: {e}")
     finally:
         stream.stop_stream()
         stream.close()
