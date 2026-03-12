@@ -4,3 +4,4 @@ faster-whisper
 uvicorn
 websockets
 pyaudio
+silero-vad
