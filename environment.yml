@@ -1,0 +1,17 @@
+name: faster-whisper
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+    - numpy
+    - fastapi
+    - faster-whisper
+    - uvicorn
+    - websockets
+    - pyaudio
+    - silero-vad
+    - nvidia-cublas-cu12
+    - nvidia-cudnn-cu12

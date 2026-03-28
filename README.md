@@ -22,47 +22,55 @@ faster-whisper/
 
 ---
 
-## 🛠️ Setup (GPU + CPU Setup)
+## 🛠️ Setup (Conda Environment)
 
 ### ၁။ GPU ရှိသော Laptop (Server)
-အသံတွေကို အချိန်နဲ့တပြေးညီ (Real-time) ပြောင်းလဲပေးဖို့ Server ကို GPU ရှိတဲ့ Laptop မှာ run ရပါမယ်။
 
 1. **Environment ဆောက်ပါ**:
    ```bash
-   python -m venv venv
-   source venv/bin/activate
+   conda env create -f environment.yml
+   conda activate faster-whisper
    ```
-2. **Dependencies သွင်းပါ**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **GPU Library များ သတ်မှတ်ပါ**:
-   ```bash
-   export LD_LIBRARY_PATH=$(python3 -c 'import nvidia.cublas as cb; import nvidia.cudnn as cn; print(f"{cb.__path__[0]}/lib:{cn.__path__[0]}/lib")'):$LD_LIBRARY_PATH
-   ```
-4. **Server ကို Start လုပ်ပါ**:
+2. **GPU Library များ သတ်မှတ်ပါ**:
+   - **Linux**: 
+     ```bash
+     export LD_LIBRARY_PATH=$(python -c 'import nvidia.cublas as cb; import nvidia.cudnn as cn; print(f"{cb.__path__[0]}/lib:{cn.__path__[0]}/lib")'):$LD_LIBRARY_PATH
+     ```
+   - **Windows**: `run_server.py` က auto-detect လုပ်ပေးမှာဖြစ်လို့ ဘာမှလုပ်စရာမလိုပါ။ (`nvidia-*` packages တွေ သွင်းထားဖို့ပဲလိုပါတယ်)
+3. **Server ကို Start လုပ်ပါ**:
    ```bash
    python run_server.py
    ```
-   *(မှတ်ချက်: `0.0.0.0` နဲ့ run နေမှာဖြစ်လို့ တစ်ခြား Laptop တွေကနေ လှမ်းချိတ်လို့ရပါတယ်)*
 
 ### ၂။ CPU ပဲရှိသော Laptop (Client)
-ဒီ Laptop က မိုက်ကရိုဖုန်းကနေ အသံဖမ်းပြီး Server ဆီ ပို့ပေးမှာဖြစ်ပါတယ်။ GPU ရှိစရာ မလိုပါ။
 
 1. **Environment ဆောက်ပါ**:
    ```bash
-   python -m venv venv
-   source venv/bin/activate
+   # Conda နဲ့ environment သစ်ဆောက်မယ်
+   conda create -n whisper-client python=3.10
+   conda activate whisper-client
    ```
-2. **လိုအပ်သော Library များသွင်းပါ** (PyAudio နဲ့ WebSockets ပဲ လိုအပ်ပါတယ်):
+2. **လိုအပ်သော Library များသွင်းပါ**:
    ```bash
+   # Linux only: sudo apt install libasound2-dev portaudio19-dev
    pip install pyaudio websockets
    ```
 3. **Server ဆီ လှမ်းချိတ်ပါ**:
-   Server ရဲ့ IP Address ကို အရင်ရှာပါ။ (Server Laptop မှာ `hostname -I` လို့ ရိုက်ကြည့်ပါ)။ ဥပမာ `192.168.1.10` ဖြစ်တယ်ဆိုရင်:
    ```bash
-   python run_client.py --host 192.168.1.10 --language en
+   python run_client.py --host <SERVER_IP> --language en
    ```
+
+---
+
+## ⚙️ Operating System Notes
+
+#### **Windows အသုံးပြုသူများအတွက်**:
+- **PyAudio**: `pip install pyaudio` က error တက်ခဲ့ရင် [Unofficial Windows Binaries](https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio) ဒါမှမဟုတ် `pip install pipwin && pipwin install pyaudio` ကို သုံးနိုင်ပါတယ်။
+- **CUDA**: `nvidia-cublas-cu12`, `nvidia-cudnn-cu12` packages တွေကို သွင်းထားရင် `run_server.py` က DLL တွေကို အလိုအလျောက် ရှာပေးမှာဖြစ်ပါတယ်။
+
+#### **Linux အသုံးပြုသူများအတွက်**:
+- **Audio Dependencies**: PyAudio မသွင်းခင် `sudo apt install libasound2-dev portaudio19-dev` ကို အရင်သွင်းပေးရပါမယ်။
+- **LD_LIBRARY_PATH**: GPU သုံးမယ်ဆိုရင် `export` command ကို Terminal တိုင်းမှာ ဒါမှမဟုတ် `.bashrc` ထဲမှာ ထည့်ထားပေးရပါမယ်။
 
 ---
 
